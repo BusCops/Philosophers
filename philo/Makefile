@@ -1,6 +1,6 @@
 NAME = philo
 
-SRC = main.c args_checker.c helper_function.c
+SRC = main.c args_checker.c helper_function.c utils.c initialize_everything.c philo_work.c
 
 OBJ = $(SRC:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: abenzaho <abenzaho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 15:35:56 by abenzaho          #+#    #+#             */
-/*   Updated: 2025/05/17 14:28:02 by abenzaho         ###   ########.fr       */
+/*   Updated: 2025/05/28 16:00:02 by abenzaho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	check_valid_args(char **av)
 	return (0);
 }
 
-void	arg_checker(int	ac, char **av)
+void	arg_checker(int ac, char **av)
 {
 	(void)av;
 	if (ac < 5)
@@ -54,20 +54,7 @@ void	arg_checker(int	ac, char **av)
 		print_args_error("too much argument for a philosopher");
 	if (check_valid_args(av))
 		print_args_error("_______only enter number pls_______");
-	if (!bc_strlen(av[1]) || !bc_strlen(av[2]) || !bc_strlen(av[3]) || !bc_strlen(av[4]))
+	if (!bc_strlen(av[1]) || !bc_strlen(av[2])
+		|| !bc_strlen(av[3]) || !bc_strlen(av[4]))
 		print_args_error("_____pls give a valid argument_____");
-}
-
-void	initialise_program(t_philo *pg, char **av)
-{
-	pg->philo_n = bc_atoi(av[1]);
-	pg->t_die = bc_atoi(av[2]);
-	pg->t_eat = bc_atoi(av[3]);
-	pg->t_sleep = bc_atoi(av[4]);
-	if (!av[5] || !bc_strlen(av[5]))
-		pg->n_t_eat = 0;
-	else
-		pg->n_t_eat = bc_atoi(av[5]);
-	if (!pg->philo_n)
-		print_args_error("philosopher number can't be zero");
 }
