@@ -6,7 +6,7 @@
 /*   By: abenzaho <abenzaho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 15:36:03 by abenzaho          #+#    #+#             */
-/*   Updated: 2025/05/28 16:52:11 by abenzaho         ###   ########.fr       */
+/*   Updated: 2025/05/29 15:07:56 by abenzaho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,18 @@ typedef struct s_mp
 	long			start_time;
 	long			time_stamp;
 	void			*(*job)(void *);
+	int				is_dead;
+	pthread_mutex_t	dl;
 	pthread_mutex_t	**forks;
+	pthread_mutex_t	**meal;
 }	t_mp;
 
 typedef struct s_philo
 {
 	pthread_t		p_th;
 	int				id;
+	int				n_eat;
 	long			last_meal;
-	// need to add some data i will need to use
 	pthread_mutex_t	*l_fork;
 	pthread_mutex_t	*r_fork;
 	t_mp			*pg;
@@ -48,7 +51,6 @@ typedef struct s_philo
 int				bc_is_digit(int c);
 int				bc_atoi(const char *s);
 size_t			bc_strlen(const char *string);
-int				bc_strcmp(const char *s1, const char *s2);
 void			initialize_pointers(void ***ptr, int count);
 
 //program arg check function
@@ -58,17 +60,20 @@ void			arg_checker(int ac, char **av);
 //initialize everything
 void			initialise_program(t_mp *pg, char **av, t_philo **philos);
 t_philo			*creat_philosophers(t_mp *pg);
-pthread_mutex_t	**creat_forks(t_mp *pg);
+void			creat_forks(t_mp *pg);
 
 //utils
 void			error_handle(const char *s, t_mp *pg, t_philo *philos);
 long			get_time(void);
 void			update_elapsed_time(t_mp *pg);
-void			print_action(t_philo *philo, const char *s);
+void			print_action(t_philo *philo, char *action);
 void			free_all(t_philo *philos, t_mp *pg);
+void			cus_usleep(long time);
 
 //philosophers job
 void			*single_philo(void	*ptr);
+void			*even_philo(void *ptr);
+void			*monitor(void *ptr);
 
 //program function
 void			*routine(void *philo);

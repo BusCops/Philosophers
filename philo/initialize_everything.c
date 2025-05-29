@@ -6,7 +6,7 @@
 /*   By: abenzaho <abenzaho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 18:03:42 by abenzaho          #+#    #+#             */
-/*   Updated: 2025/05/28 16:54:01 by abenzaho         ###   ########.fr       */
+/*   Updated: 2025/05/29 15:50:42 by abenzaho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	initialise_program(t_mp *pg, char **av, t_philo **philos)
 {
 	pg->forks = NULL;
 	*philos = NULL;
+	pthread_mutex_init(&pg->dl, NULL);
+	pg->is_dead = 0;
 	pg->start_time = get_time();
 	pg->philo_n = bc_atoi(av[1]);
 	pg->t_die = bc_atoi(av[2]);
@@ -29,6 +31,8 @@ void	initialise_program(t_mp *pg, char **av, t_philo **philos)
 		print_args_error("philosopher number can't be zero");
 	if (pg->philo_n == 1)
 		pg->job = single_philo;
+	else if (pg->philo_n % 2 == 0)
+		pg->job = even_philo;
 	else
 		pg->job = routine;
 }
@@ -46,6 +50,8 @@ t_philo	*creat_philosophers(t_mp *pg)
 	{
 		philos[i].id = i;
 		philos[i].pg = pg;
+		philos[i].n_eat = 0;
+		philos[i].last_meal = 0;
 		if (i == 0)
 			philos[i].l_fork = pg->forks[pg->philo_n - 1];
 		else
@@ -58,7 +64,7 @@ t_philo	*creat_philosophers(t_mp *pg)
 	return (philos);
 }
 
-pthread_mutex_t	**creat_forks(t_mp *pg)
+void	creat_forks(t_mp *pg)
 {
 	pthread_mutex_t	**forks;
 	int				i;
@@ -77,5 +83,4 @@ pthread_mutex_t	**creat_forks(t_mp *pg)
 		pthread_mutex_init(forks[i], NULL);
 		i++;
 	}
-	return (forks);
 }

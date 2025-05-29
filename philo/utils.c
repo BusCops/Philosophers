@@ -6,7 +6,7 @@
 /*   By: abenzaho <abenzaho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 16:41:08 by abenzaho          #+#    #+#             */
-/*   Updated: 2025/05/28 16:43:36 by abenzaho         ###   ########.fr       */
+/*   Updated: 2025/05/29 14:51:33 by abenzaho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,13 @@ void	update_elapsed_time(t_mp *pg)
 	pg->time_stamp = t_now - pg->start_time;
 }
 
-void	print_action(t_philo *philo, const char *s)
+void	print_action(t_philo *philo, char *action)
 {
 	update_elapsed_time(philo->pg);
-	printf("%ld %i %s\n", philo->pg->time_stamp, philo->id, s);
+	pthread_mutex_lock(&philo->pg->dl);
+	if (!philo->pg->is_dead)
+		printf("%ld %d %s\n", philo->pg->time_stamp, philo->id, action);
+	pthread_mutex_unlock(&philo->pg->dl);
 }
 
 void	free_all(t_philo *philos, t_mp *pg)
@@ -59,4 +62,9 @@ void	free_all(t_philo *philos, t_mp *pg)
 		}
 		free(pg->forks);
 	}
+}
+
+void	cus_usleep(long time)
+{
+	usleep(time * 1000);
 }
