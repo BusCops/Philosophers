@@ -31,9 +31,11 @@ typedef struct s_mp
 	long			time_stamp;
 	void			*(*job)(void *);
 	int				is_dead;
+	pthread_mutex_t	time;
+	pthread_mutex_t	print;
 	pthread_mutex_t	dl;
 	pthread_mutex_t	**forks;
-	pthread_mutex_t	**meal;
+	pthread_mutex_t	**meals;
 }	t_mp;
 
 typedef struct s_philo
@@ -42,6 +44,7 @@ typedef struct s_philo
 	int				id;
 	int				n_eat;
 	long			last_meal;
+	pthread_mutex_t	*meals_n;
 	pthread_mutex_t	*l_fork;
 	pthread_mutex_t	*r_fork;
 	t_mp			*pg;
@@ -55,12 +58,13 @@ void			initialize_pointers(void ***ptr, int count);
 
 //program arg check function
 void			print_args_error(char *s);
-void			arg_checker(int ac, char **av);
+int				arg_checker(int ac, char **av);
 
 //initialize everything
-void			initialise_program(t_mp *pg, char **av, t_philo **philos);
+int				initialise_program(t_mp *pg, char **av, t_philo **philos);
 t_philo			*creat_philosophers(t_mp *pg);
-void			creat_forks(t_mp *pg);
+int				creat_forks(t_mp *pg);
+int				creat_meals(t_mp *pg);
 
 //utils
 void			error_handle(const char *s, t_mp *pg, t_philo *philos);
@@ -68,7 +72,7 @@ long			get_time(void);
 void			update_elapsed_time(t_mp *pg);
 void			print_action(t_philo *philo, char *action);
 void			free_all(t_philo *philos, t_mp *pg);
-void			cus_usleep(long time);
+void			cus_usleep(long time, t_philo *philo);
 
 //philosophers job
 void			*single_philo(void	*ptr);

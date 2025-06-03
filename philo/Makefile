@@ -1,12 +1,12 @@
 NAME = philo
 
-SRC = main.c args_checker.c helper_function.c utils.c initialize_everything.c philo_work.c
+SRC = main.c args_checker.c helper_function.c utils.c initialize_everything.c philo_work.c monitor.c
 
 OBJ = $(SRC:.c=.o)
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 RM = rm -rf 
 
 all : $(NAME)

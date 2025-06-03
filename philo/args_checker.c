@@ -22,7 +22,6 @@ void	print_args_error(char *s)
 	printf("              ->time_to_sleep<-              \n");
 	printf("_________________|optional|__________________\n");
 	printf("->number_of_times_each_philosopher_must_eat<-\n");
-	exit (1);
 }
 
 int	check_valid_args(char **av)
@@ -45,16 +44,28 @@ int	check_valid_args(char **av)
 	return (0);
 }
 
-void	arg_checker(int ac, char **av)
+int	arg_checker(int ac, char **av)
 {
-	(void)av;
 	if (ac < 5)
+	{
 		print_args_error("too few argument for a philosopher");
+		return (1);
+	}
 	if (ac > 6)
+	{
 		print_args_error("too much argument for a philosopher");
+		return (1);
+	}
 	if (check_valid_args(av))
+	{
 		print_args_error("_______only enter number pls_______");
-	if (!bc_strlen(av[1]) || !bc_strlen(av[2])
-		|| !bc_strlen(av[3]) || !bc_strlen(av[4]))
+		return (1);
+	}
+	if (!bc_strlen(av[1]) || !bc_strlen(av[2]) || !bc_strlen(av[3])
+		|| !bc_strlen(av[4]))
+	{
 		print_args_error("_____pls give a valid argument_____");
+		return (1);
+	}
+	return (0);
 }

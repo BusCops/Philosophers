@@ -12,44 +12,70 @@
 
 #include "philo.h"
 
-void	*routine(void *arg)
+void	error_handle(const char *s, t_mp *pg, t_philo *philos)
 {
-	t_philo	*philo;
-
-	philo = (t_philo *)arg;
-	pthread_mutex_lock(philo->l_fork);
-	update_elapsed_time(philo->pg);
-	print_action(philo, "has taken a fork");
-	pthread_mutex_lock(philo->r_fork);
-	update_elapsed_time(philo->pg);
-	print_action(philo, "has taken a fork");
-	update_elapsed_time(philo->pg);
-	print_action(philo, "is eating");
-	usleep(100000);
-	pthread_mutex_unlock(philo->l_fork);
-	pthread_mutex_unlock(philo->r_fork);
-	return (NULL);
+	write(2, "philo : ", 8);
+	write(2, s, bc_strlen(s));
+	write(2, "\n", 1);
+	free_all(philos, pg);
 }
 
-int	main(int ac, char **av)
+void	join_threads(t_mp *pg, t_philo *philos)
 {
-	t_mp	pg;
-	t_philo	*philos;
-	pthread_t	moni;
-	int		i;
+	int	i;
 
-	arg_checker(ac, av);
-	initialise_program(&pg, av, &philos);
-	creat_forks(&pg);
-	philos = creat_philosophers(&pg);
-	if (pthread_create(&moni, NULL, monitor, philos) != 0)
-		error_handle("creating thread fail", &pg, philos);
 	i = 0;
-	while (i < pg.philo_n)
+	while (i < pg->philo_n)
 	{
 		pthread_join(philos[i].p_th, NULL);
 		i++;
 	}
+}
+
+void	destory_mutex(t_mp *pg)
+{
+	int	i;
+
+	i = 0;
+	pthread_mutex_destroy(&pg->dl);
+	pthread_mutex_destroy(&pg->time);
+	pthread_mutex_destroy(&pg->print);
+	while (i < pg->philo_n)
+	{
+		pthread_mutex_destroy(pg->meals[i]);
+		pthread_mutex_destroy(pg->forks[i]);
+		i++;
+	}
+}
+
+void	creat_mutex(t_mp *pg)
+{
+	pthread_mutex_init(&pg->dl, NULL);
+	pthread_mutex_init(&pg->time, NULL);
+	pthread_mutex_init(&pg->print, NULL);
+}
+
+int	main(int ac, char **av)
+{
+	t_mp		pg;
+	t_philo		*philos;
+	pthread_t	moni;
+
+	if (arg_checker(ac, av))
+		return (1);
+	if (initialise_program(&pg, av, &philos))
+		return (1);
+	if (creat_forks(&pg) || creat_meals(&pg))
+		return (1);
+	creat_mutex(&pg);
+	philos = creat_philosophers(&pg);
+	if (!philos)
+		return (1);
+	if (pthread_create(&moni, NULL, monitor, philos) != 0)
+		return (error_handle("creating thread fail", &pg, philos), 1);
+	pthread_join(moni, NULL);
+	join_threads(&pg, philos);
+	destory_mutex(&pg);
 	free_all(philos, &pg);
 	return (0);
 }
